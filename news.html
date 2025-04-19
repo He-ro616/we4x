@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>News & Updates - We4X</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Navbar Styles */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      background-color: white;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .navbar .logo img {
+      height: 50px;
+    }
+
+    .navbar nav ul {
+      list-style: none;
+      display: flex;
+      gap: 20px;
+      margin: 0;
+      padding: 0;
+    }
+
+    .navbar nav ul li {
+      display: inline-block;
+    }
+
+    .navbar nav ul li a {
+      text-decoration: none;
+      color: #333;
+      font-weight: bold;
+    }
+
+    .navbar nav ul li a.active {
+      color: #1a73e8;
+    }
+
+    /* Hamburger Menu */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      cursor: pointer;
+    }
+
+    .hamburger div {
+      width: 25px;
+      height: 3px;
+      background-color: #333;
+      margin: 4px 0;
+    }
+
+    /* Mobile Styles */
+    @media (max-width: 768px) {
+      .navbar nav ul {
+        display: none;
+        flex-direction: column;
+        background-color: white;
+        position: absolute;
+        top: 60px;
+        right: 20px;
+        width: 200px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        padding: 10px;
+      }
+
+      .navbar nav ul.active {
+        display: flex;
+      }
+
+      .hamburger {
+        display: flex;
+      }
+    }
+
+    .news-section {
+      padding: 60px 20px;
+      text-align: center;
+    }
+
+    .news-section h1 {
+      font-family: "Georgia", cursive;
+      font-style: italic;
+      font-size: 48px;
+      margin-bottom: 20px;
+    }
+
+    .news-section p {
+      font-size: 18px;
+      color: #5f6368;
+      margin-bottom: 40px;
+    }
+
+    .news-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 24px;
+    }
+
+    .news-card {
+      max-width: 300px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      text-align: left;
+      background: white;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .news-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .news-card img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .news-card-content {
+      padding: 16px;
+    }
+
+    .news-card-content h3 {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+
+    .news-card-content p {
+      font-size: 16px;
+      color: #5f6368;
+      margin-bottom: 10px;
+    }
+
+    .news-card-content .button {
+      display: inline-block;
+      padding: 8px 16px;
+      background-color: #1a73e8;
+      color: white;
+      border-radius: 24px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+
+    .news-card-content .button:hover {
+      background-color: #0c5ad8;
+    }
+  </style>
+</head>
+<body>
+  <header class="navbar">
+    <div class="logo">
+      <img src="logo.png" alt="We4X Logo">
+    </div>
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="products.html">Products</a></li>
+        <li><a href="clubinfo.html">Club Info</a></li>
+        <li><a href="news.html" class="active">News</a></li>
+      </ul>
+    </nav>
+    <div class="hamburger" onclick="toggleMenu()">
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+  </header>
+  <h1> no news update </h1>
+
+  <!--- <section class="news-section">
+    <h1>Latest News & Updates</h1>
+    <p>Stay updated with our latest news, events, collaborations, openings, and future plans.</p>
+    <div class="news-grid">
+      <div class="news-card">
+        <img src="event1.jpg" alt="Event 1">
+        <div class="news-card-content">
+          <h3>Upcoming Event</h3>
+          <p>Join us for our annual tech conference on May 15th, 2025.</p>
+          <a href="#" class="button">Read More</a>
+        </div>
+      </div>
+      <div class="news-card">
+        <img src="collab1.jpg" alt="Collaboration">
+        <div class="news-card-content">
+          <h3>New Collaboration</h3>
+          <p>We are excited to announce our partnership with TechCorp.</p>
+          <a href="#" class="button">Read More</a>
+        </div>
+      </div>
+      <div class="news-card">
+        <img src="opening1.jpg" alt="Job Opening">
+        <div class="news-card-content">
+          <h3>Job Openings</h3>
+          <p>We are hiring! Check out our latest job openings.</p>
+          <a href="#" class="button">Read More</a>
+        </div>
+      </div>
+      <div class="news-card">
+        <img src="future1.jpg" alt="Future Plans">
+        <div class="news-card-content">
+          <h3>Future Plans</h3>
+          <p>Discover our vision and plans for the upcoming year.</p>
+          <a href="#" class="button">Read More</a>
+        </div>
+      </div>
+    </div>
+  </section> --->
+
+  <footer>
+    <p>&copy; 2025 We4X. All rights reserved.</p>
+  </footer>
+
+  <script>
+    function toggleMenu() {
+      const nav = document.querySelector('.navbar nav ul');
+      nav.classList.toggle('active');
+    }
+  </script>
+</body>
+</html>
