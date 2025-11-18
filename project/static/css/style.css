@@ -1,0 +1,54 @@
+body {
+    background-color: #f8f9fa;
+}
+
+.card {
+    border: none;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+/* Navigation Styles */
+.navbar {
+    box-shadow: 0 2px 4px rgba(0,0,0,.1);
+    background-color: white !important;
+    padding: 1rem;
+}
+
+.navbar-brand {
+    font-weight: 600;
+    font-size: 1.5rem;
+}
+
+.nav-link {
+    font-weight: 500;
+    padding: 0.5rem 1rem !important;
+}
+
+.dropdown-menu {
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,.15);
+    border: none;
+    border-radius: 0.5rem;
+}
+
+.dropdown-item {
+    padding: 0.75rem 1.5rem;
+}
+
+.dropdown-item i {
+    margin-right: 0.5rem;
+}
+
+/* Profile picture in navbar */
+.nav-profile-pic {
+    width: 32px;
+    height: 32px;
+    object-fit: cover;
+    border-radius: 50%;
+    margin-right: 0.5rem;
+}
+
+/* Active nav items */
+.nav-link.active {
+    color: #0d6efd !important;
+    font-weight: 600;
+}

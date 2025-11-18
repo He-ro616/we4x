@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h1>Create Event</h1>
+
+    {% if db_error %}
+        <div class="alert alert-warning" role="alert">
+            <h4 class="alert-heading">Database Connection Issue</h4>
+            <p>{{ db_error }}</p>
+            {% if 'sqlite' in db_url %}
+                <hr>
+                <p class="mb-0">Using local SQLite database: {{ db_url }}</p>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label for="title" class="form-label">Title</label>
+            <input type="text" class="form-control" id="title" name="title" required>
+        </div>
+        <div class="mb-3">
+            <label for="start_datetime" class="form-label">Start datetime</label>
+            <input type="datetime-local" class="form-control" id="start_datetime" name="start_datetime" required>
+        </div>
+        <div class="mb-3">
+            <label for="end_datetime" class="form-label">End datetime</label>
+            <input type="datetime-local" class="form-control" id="end_datetime" name="end_datetime" required>
+        </div>
+        <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="meet_link" class="form-label">Google Meet or Zoom Link</label>
+            <input type="url" class="form-control" id="meet_link" name="meet_link">
+        </div>
+        <div class="mb-3">
+            <label for="banner_image" class="form-label">Banner Image</label>
+            <input type="file" class="form-control" id="banner_image" name="banner_image" accept="image/*">
+        </div>
+        <button type="submit" class="btn btn-primary" {% if db_error %}disabled{% endif %}>Create Event</button>
+        {% if db_error %}
+            <p class="text-danger mt-2">Event creation is disabled while database is unavailable.</p>
+        {% endif %}
+    </form>
+</div>
+{% endblock %}

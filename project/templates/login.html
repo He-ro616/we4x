@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="card shadow-lg p-4" style="max-width: 420px; width: 100%; border-radius: 1rem;">
+        <div class="card-body text-center">
+            <h3 class="mb-3">Welcome to <strong>We4X</strong></h3>
+            <p class="text-muted mb-4">Choose your login method below</p>
+
+            <!-- Google Login -->
+            <a href="{{ url_for('auth.login_google') }}" class="btn btn-danger w-100 mb-3">
+                <i class="bi bi-google"></i> Sign in with Google
+            </a>
+
+            <hr class="my-4">
+
+            <form method="POST" action="{{ url_for('auth.login') }}">
+                {{ form.hidden_tag() }}
+                <div class="mb-3 text-start">
+                    {{ form.email.label(class="form-label") }}
+                    {{ form.email(class="form-control", placeholder="name@example.com") }}
+                    {% for error in form.email.errors %}
+                        <div class="text-danger small mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="mb-3 text-start">
+                    {{ form.password.label(class="form-label") }}
+                    {{ form.password(class="form-control", placeholder="Password") }}
+                    {% for error in form.password.errors %}
+                        <div class="text-danger small mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <button type="submit" class="btn btn-primary w-100 mb-3">
+                    <i class="bi bi-box-arrow-in-right"></i> Login
+                </button>
+            </form>
+
+
+            <div class="mt-4 text-muted small text-center">
+                <p>By logging in, you agree to We4X’s <a href="#">terms</a> and <a href="#">privacy policy</a>.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

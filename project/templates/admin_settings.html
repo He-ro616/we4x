@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Site Settings</h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        {{ form.hidden_tag() }}
+
+                        <!-- Banner URL Input -->
+                        <div class="mb-3">
+                            {{ form.banner_url.label(class="form-label") }}
+                            {{ form.banner_url(class="form-control", placeholder="Enter Banner Image URL") }}
+                            {% for error in form.banner_url.errors %}
+                                <span class="text-danger">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Banner File Upload -->
+                        <div class="mb-3">
+                            {{ form.banner_file.label(class="form-label") }}
+                            {{ form.banner_file(class="form-control") }}
+                            {% for error in form.banner_file.errors %}
+                                <span class="text-danger">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Live Preview -->
+                        <div class="mb-3">
+                            <label class="form-label">Live Preview:</label>
+                            <img id="bannerPreview" src="{{ form.banner_url.data or '' }}" class="img-fluid rounded" style="max-height:300px; width:100%; object-fit:cover;">
+                        </div>
+
+                        <div class="d-grid">
+                            {{ form.submit(class="btn btn-primary") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Live Preview Script -->
+<script>
+    const bannerUrlInput = document.querySelector('input[name="banner_url"]');
+    const bannerFileInput = document.querySelector('input[name="banner_file"]');
+    const preview = document.getElementById('bannerPreview');
+
+    // Update preview for URL input
+    bannerUrlInput.addEventListener('input', function() {
+        if(this.value) {
+            preview.src = this.value;
+        }
+    });
+
+    // Update preview for uploaded file
+    bannerFileInput.addEventListener('change', function() {
+        const file = this.files[0];
+        if(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+</script>
+{% endblock %}

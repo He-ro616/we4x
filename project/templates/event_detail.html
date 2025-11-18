@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    {% if db_error %}
+        <div class="alert alert-warning" role="alert">
+            <h4 class="alert-heading">Database Connection Issue</h4>
+            <p>{{ db_error }}</p>
+            {% if 'sqlite' in db_url %}
+                <hr>
+                <p class="mb-0">Using local SQLite database: {{ db_url }}</p>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    {% if event %}
+        <div class="card mb-4">
+            <div class="card-body">
+                <h1 class="card-title">{{ event.title }}</h1>
+                <p class="card-text"><strong>Starts:</strong> {{ event.start_datetime.strftime('%Y-%m-%d %H:%M') }}</p>
+                <p class="card-text"><strong>Ends:</strong> {{ event.end_datetime.strftime('%Y-%m-%d %H:%M') }}</p>
+                {% if event.description %}
+                    <p class="card-text">{{ event.description }}</p>
+                {% endif %}
+                {% if event.meet_link %}
+                    <a href="{{ event.meet_link }}" target="_blank" class="btn btn-primary">Join Google Meet</a>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <h2 class="card-title">Register for this event</h2>
+                <form action="{{ url_for('events.register', event_id=event.id) }}" method="post">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="name" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Register</button>
+                </form>
+            </div>
+        </div>
+
+        {% if regs %}
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title">Registrations</h2>
+                <ul class="list-group list-group-flush">
+                    {% for reg in regs %}
+                        <li class="list-group-item">{{ reg.user_name }} ({{ reg.user_email }})</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        {% endif %}
+    {% else %}
+        {% if not db_error %}
+            <div class="card text-center">
+                <div class="card-body">
+                    <p class="card-text">Event not found or has been removed.</p>
+                </div>
+            </div>
+        {% endif %}
+    {% endif %}
+</div>
+{% endblock %}

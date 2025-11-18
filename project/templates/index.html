@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    body {
+        background-color: #f0f2f5;
+    }
+
+    /* Dashboard cards */
+    .dashboard-card {
+        transition: all 0.3s ease-in-out;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .dashboard-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 15px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Hero section */
+    .hero-banner {
+        position: relative;
+        width: 100%;
+        max-width: 7xl;
+        margin: 3rem auto 0 auto;
+        border-radius: 1rem;
+        overflow: hidden;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+
+        /* Responsive heights */
+        height: 40vh; /* default for small screens */
+    }
+
+    @media (min-width: 640px) {
+        .hero-banner {
+            height: 50vh; /* tablets */
+        }
+    }
+
+    @media (min-width: 1024px) {
+        .hero-banner {
+            height: 70vh; /* desktops */
+        }
+    }
+
+    /* Overlay */
+    .hero-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.4);
+    }
+
+    /* Hero text */
+    .hero-text-overlay {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        text-align: center;
+        padding: 2rem;
+        border-radius: 0.75rem;
+        background: rgba(0, 0, 0, 0.3);
+    }
+</style>
+
+<div class="container-fluid px-4">
+
+    <!-- Hero Section with Admin-Controlled Banner -->
+   <div class="hero-banner" style="background-image: url('{{ banner_image_url }}');">
+        
+        <div class="hero-text-overlay">
+            <h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold">Welcome to We4X</h1>
+            <p class="text-lg sm:text-xl md:text-3xl mt-4 font-light">Innovating Solutions for a Better Tomorrow</p>
+        </div>
+    </div>
+
+    <!-- Upcoming Events Section -->
+    <div class="container mx-auto mt-16 p-8">
+        <h2 class="text-4xl font-bold mb-10 text-center text-gray-800">Upcoming Events</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            {% for event in events %}
+            <div class="dashboard-card bg-white rounded-xl p-8">
+                <h3 class="text-2xl font-semibold mb-3 text-gray-900">{{ event.name }}</h3>
+                <p class="text-gray-600 mb-2"><i class="far fa-calendar-alt mr-2"></i>{{ event.date }}</p>
+                <p class="text-gray-500 mb-4"><i class="fas fa-map-marker-alt mr-2"></i>{{ event.location }}</p>
+                <a href="#" class="text-blue-600 hover:text-blue-800 font-medium transition duration-300 ease-in-out">Learn More <i class="fas fa-arrow-right ml-1"></i></a>
+            </div>
+            {% else %}
+            <div class="col-span-full text-center text-gray-500 py-10">
+                <p class="text-xl">No upcoming events at the moment. Please check back later!</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Trendy & Latest Posts Section -->
+    <div class="container mx-auto mt-16 p-8">
+        <h2 class="text-4xl font-bold mb-10 text-center text-gray-800">Trendy & Latest Posts</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            {% for post in posts %}
+            <div class="dashboard-card bg-white rounded-xl p-8">
+                <h3 class="text-2xl font-semibold mb-3 text-gray-900">{{ post.title }}</h3>
+                <p class="text-gray-600 mb-2"><i class="fas fa-user mr-2"></i>{{ post.author }}</p>
+                <p class="text-gray-500 mb-4"><i class="far fa-clock mr-2"></i>{{ post.date }}</p>
+                <a href="#" class="text-blue-600 hover:text-blue-800 font-medium transition duration-300 ease-in-out">Read More <i class="fas fa-arrow-right ml-1"></i></a>
+            </div>
+            {% else %}
+            <div class="col-span-full text-center text-gray-500 py-10">
+                <p class="text-xl">No trendy or latest posts at the moment. Stay tuned!</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}

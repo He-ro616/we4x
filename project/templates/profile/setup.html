@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Complete Your Profile</h3>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        <!-- Profile Picture Preview -->
+                        <div class="mb-4 text-center">
+                            {% if user.profile_picture %}
+                                <img id="profilePreview" src="{{ url_for('static', filename='uploads/' + user.profile_picture) }}" 
+                                     class="rounded-circle shadow-sm mb-2" style="width:150px; height:150px; object-fit:cover;">
+                            {% else %}
+                                <div id="profilePreview" class="bg-light rounded-circle mb-2 d-flex align-items-center justify-content-center" 
+                                     style="width:150px; height:150px;">
+                                    <span class="text-muted display-4">{{ user.name[:1] if user.name else '' }}</span>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Profile Picture Upload -->
+                        <div class="mb-4">
+                            <label for="profile_picture" class="form-label">Profile Picture</label>
+                            <input type="file" class="form-control" id="profile_picture" name="profile_picture" accept="image/*" 
+                                   onchange="previewProfilePicture(event)">
+                            <small class="text-muted">Max size: 5MB. Only images allowed.</small>
+                        </div>
+
+                        <!-- Professional Info -->
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="name" name="name" 
+                                   value="{{ user.name or '' }}" placeholder="Your Name">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="headline" class="form-label">Professional Headline</label>
+                            <input type="text" class="form-control" id="headline" name="headline" 
+                                   value="{{ user.headline or '' }}" placeholder="e.g., Senior Software Engineer at Tech Corp">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="bio" class="form-label">About/Bio</label>
+                            <textarea class="form-control" id="bio" name="bio" rows="4" 
+                                      placeholder="Tell us about yourself...">{{ user.bio or '' }}</textarea>
+                        </div>
+
+                        <!-- Work Info -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="company" class="form-label">Current Company</label>
+                                <input type="text" class="form-control" id="company" name="company" 
+                                       value="{{ user.company or '' }}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="position" class="form-label">Current Position</label>
+                                <input type="text" class="form-control" id="position" name="position" 
+                                       value="{{ user.position or '' }}">
+                            </div>
+                        </div>
+
+                        <!-- Location -->
+                        <div class="mb-3">
+                            <label for="location" class="form-label">Location</label>
+                            <input type="text" class="form-control" id="location" name="location" 
+                                   value="{{ user.location or '' }}" placeholder="e.g., New York, NY">
+                        </div>
+
+                        <!-- Links -->
+                        <div class="mb-3">
+                            <label for="website" class="form-label">Personal Website</label>
+                            <input type="url" class="form-control" id="website" name="website" 
+                                   value="{{ user.website or '' }}" placeholder="https://...">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="linkedin_url" class="form-label">LinkedIn Profile</label>
+                            <input type="url" class="form-control" id="linkedin_url" name="linkedin_url" 
+                                   value="{{ user.linkedin_url or '' }}" placeholder="https://linkedin.com/in/...">
+                        </div>
+
+                        <!-- Skills -->
+                        <div class="mb-4">
+                            <label for="skills" class="form-label">Skills</label>
+                            <input type="text" class="form-control" id="skills" name="skills" 
+                                   value="{{ user.skills or '' }}" placeholder="e.g., Python, Project Management, Leadership">
+                            <small class="text-muted">Separate skills with commas (e.g., Python, SQL, Leadership)</small>
+                        </div>
+
+                        <!-- Save Button -->
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary btn-lg px-5">Save Profile</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JS for Profile Picture Preview -->
+<script>
+function previewProfilePicture(event) {
+    const reader = new FileReader();
+    reader.onload = function(){
+        const output = document.getElementById('profilePreview');
+        if(output.tagName === 'IMG'){
+            output.src = reader.result;
+        } else {
+            // Replace placeholder div with image
+            const img = document.createElement('img');
+            img.id = 'profilePreview';
+            img.src = reader.result;
+            img.className = 'rounded-circle shadow-sm mb-2';
+            img.style.width = '150px';
+            img.style.height = '150px';
+            img.style.objectFit = 'cover';
+            output.replaceWith(img);
+        }
+    }
+    reader.readAsDataURL(event.target.files[0]);
+}
+</script>
+{% endblock %}
