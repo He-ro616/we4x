@@ -28,18 +28,6 @@
             </div>
             {% endif %}
 
-            <!-- Featured YouTube Video -->
-            {% if youtube_link %}
-            <div class="card shadow-sm mb-4">
-                <div class="card-body">
-                    <h5 class="card-title fw-bold mb-3">Featured Video</h5>
-                    <div class="ratio ratio-16x9">
-                        <iframe src="{{ youtube_link }}" title="YouTube video" allowfullscreen></iframe>
-                    </div>
-                </div>
-            </div>
-            {% endif %}
-
             <!-- Display Posts -->
             {% for post in posts %}
             <div class="card shadow-sm mb-4">
@@ -239,3 +227,4 @@ function sharePost(title, text) {
     }
 }
 </script>
+
