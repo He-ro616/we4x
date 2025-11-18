@@ -10,6 +10,6 @@ python-dotenv==1.0.0
 Werkzeug<3.0.0
 email-validator==2.1.1
 gunicorn==21.2.0
-psycopg[binary]==3.2.0
+psycopg[binary]==3.2.12
 Flask-WTF==1.1.1
 WTForms==3.0.1
