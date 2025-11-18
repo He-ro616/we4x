@@ -1,33 +1,40 @@
+# project/oauth_helpers.py
 from flask_login import current_user
 from .models import OAuthToken, db
-from . import oauth  # global instance from __init__.py
+from authlib.integrations.flask_client import OAuth
 
+# Global OAuth instance
+oauth = OAuth()
+
+# ------------------------
+# Token Helpers
+# ------------------------
 def fetch_token(name):
-    """Fetch the OAuth token for the current user."""
     if not current_user.is_authenticated:
         return None
     token = OAuthToken.query.filter_by(name=name, user_id=current_user.id).first()
     return token.to_dict() if token else None
 
 def update_token(name, token):
-    """Update or create an OAuth token for the current user."""
     if not current_user.is_authenticated:
-        return  # exit if user is not logged in
-
+        return
     tok = OAuthToken.query.filter_by(name=name, user_id=current_user.id).first()
     if not tok:
         tok = OAuthToken(name=name, user_id=current_user.id)
         db.session.add(tok)
-
     tok.access_token = token.get('access_token')
     tok.refresh_token = token.get('refresh_token', tok.refresh_token)
     tok.expires_at = token.get('expires_at')
     tok.scope = token.get('scope')
     db.session.commit()
 
+
+# ------------------------
+# Initialize OAuth
+# ------------------------
 def init_oauth(app):
-    """Initialize and register OAuth providers."""
     scopes = ['openid', 'email', 'profile']
+    oauth.init_app(app)
     oauth.register(
         name='google',
         client_id=app.config['GOOGLE_CLIENT_ID'],
@@ -35,8 +42,7 @@ def init_oauth(app):
         server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
         client_kwargs={
             'scope': ' '.join(scopes),
-            'access_type': 'offline',  # 'offline' allows refresh tokens
-            'prompt': 'consent'        # ensures user consent each time
-        },
-        redirect_uri=app.config['OAUTH_REDIRECT_URI']  # explicitly set redirect URI
+            'access_type': 'offline',  # allows refresh tokens
+            'prompt': 'consent'        # ensures consent each time
+        }
     )
