@@ -2,6 +2,12 @@ from flask_login import UserMixin
 from datetime import datetime
 from . import db
 from werkzeug.security import generate_password_hash, check_password_hash
+# project/models.py
+from . import db
+
+class YoutubeLink(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    link = db.Column(db.String(255), nullable=False)
 
 
 # ---------------------------------------------------
@@ -246,3 +252,4 @@ class SiteConfig(db.Model):
 
     def __repr__(self):
         return f"<SiteConfig (ID: {self.id})>"
+
