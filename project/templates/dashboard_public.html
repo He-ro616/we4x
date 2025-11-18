@@ -3,8 +3,10 @@
 
 <div class="container mt-4">
     <div class="row">
+
         <!-- Main Content -->
         <div class="col-lg-8">
+
             <!-- Create Post Section -->
             {% if current_user.is_authenticated %}
             <div class="card shadow-sm mb-4">
@@ -41,6 +43,7 @@
             <!-- Display Posts -->
             {% for post in posts %}
             <div class="card shadow-sm mb-4">
+                <!-- Post Header -->
                 <div class="card-header bg-white d-flex align-items-center p-3">
                     {% if post.author.profile_picture %}
                         <img src="{{ url_for('static', filename='uploads/' + post.author.profile_picture) }}" class="rounded-circle me-3" style="width:40px; height:40px; object-fit:cover;">
@@ -55,6 +58,7 @@
                     </div>
                 </div>
 
+                <!-- Post Content -->
                 <div class="card-body p-3">
                     <h5 class="card-title fw-bold text-truncate">{{ post.title }}</h5>
                     <p class="card-text">{{ post.content }}</p>
@@ -64,6 +68,7 @@
                 <img src="{{ url_for('static', filename='uploads/' + post.post_image) }}" class="card-img-bottom" alt="Post Image" style="max-height:400px; object-fit:cover;">
                 {% endif %}
 
+                <!-- Post Actions -->
                 <div class="card-footer bg-white d-flex justify-content-start align-items-center gap-2 p-3">
                     <button class="btn btn-sm btn-outline-danger d-flex align-items-center">
                         <i class="fas fa-heart me-2"></i> Like
@@ -115,12 +120,15 @@
                 </div>
             </div>
             {% endfor %}
+
         </div>
 
         <!-- Sidebar -->
         <div class="col-lg-4">
-            <div class="card shadow-sm mb-4">
-                <div class="card-body text-center">
+
+            <!-- User Card -->
+            <div class="card shadow-sm mb-4 text-center">
+                <div class="card-body">
                     {% if current_user.is_authenticated %}
                         {% if current_user.profile_picture %}
                             <img src="{{ url_for('static', filename='uploads/' + current_user.profile_picture) }}" class="rounded-circle mb-3" style="width:80px; height:80px; object-fit:cover;">
@@ -174,6 +182,7 @@
                     </ul>
                 </div>
             </div>
+
         </div>
     </div>
 </div>
