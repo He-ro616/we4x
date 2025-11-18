@@ -1,94 +1,143 @@
 {% extends "base.html" %}
 
 {% block content %}
+<!-- Alpine.js for modal functionality -->
+<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+
 <style>
-    body {
-        background-color: #f0f2f5;
-    }
+body {
+    background-color: #f0f2f5;
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+}
 
-    /* Dashboard cards */
-    .dashboard-card {
-        transition: all 0.3s ease-in-out;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-    .dashboard-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 15px rgba(0, 0, 0, 0.15);
-    }
+/* Card styling */
+.dashboard-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 1rem;
+    background-color: #fff;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+.dashboard-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+}
 
-    /* Hero section */
-    .hero-banner {
-        position: relative;
-        width: 100%;
-        max-width: 7xl;
-        margin: 3rem auto 0 auto;
-        border-radius: 1rem;
-        overflow: hidden;
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
+/* Hero Section */
+.hero-banner {
+    width: 100%;
+    height: 40vh;
+    margin: 3rem auto 0 auto;
+    max-width: 1200px;
+    position: relative;
+    border-radius: 1rem;
+    overflow: hidden;
+}
+.hero-banner img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+@media (min-width: 640px) { .hero-banner { height: 50vh; } }
+@media (min-width: 1024px) { .hero-banner { height: 70vh; } }
 
-        /* Responsive heights */
-        height: 40vh; /* default for small screens */
-    }
+.hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.3);
+    border-radius: 1rem;
+}
 
-    @media (min-width: 640px) {
-        .hero-banner {
-            height: 50vh; /* tablets */
-        }
-    }
+.hero-text-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    padding: 2rem;
+    border-radius: 0.5rem;
+    background: rgba(0,0,0,0.35);
+    color: #fff;
+}
+.hero-text-overlay h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.6);
+}
+.hero-text-overlay p {
+    font-size: 1rem;
+    margin-top: 0.75rem;
+    font-weight: 400;
+    text-shadow: 1px 1px 6px rgba(0,0,0,0.5);
+}
+@media (min-width: 640px) { .hero-text-overlay h1 { font-size: 2.5rem; } .hero-text-overlay p { font-size: 1.25rem; } }
+@media (min-width: 1024px) { .hero-text-overlay h1 { font-size: 4rem; } .hero-text-overlay p { font-size: 1.5rem; } }
 
-    @media (min-width: 1024px) {
-        .hero-banner {
-            height: 70vh; /* desktops */
-        }
-    }
+/* Section Titles */
+h2 { font-weight: 700; color: #1f2937; }
 
-    /* Overlay */
-    .hero-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.4);
-    }
+/* Grid layout */
+.grid { display: grid; grid-template-columns: 1fr; gap: 2rem; }
+@media (min-width: 640px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1024px) { .grid { grid-template-columns: repeat(3, 1fr); } }
 
-    /* Hero text */
-    .hero-text-overlay {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        color: white;
-        text-align: center;
-        padding: 2rem;
-        border-radius: 0.75rem;
-        background: rgba(0, 0, 0, 0.3);
-    }
+/* Event date styling */
+.event-date { font-weight: 600; color: #1d4ed8; }
+
+/* Modal background */
+.modal-bg { background: rgba(0,0,0,0.5); }
+
+/* Button styling */
+button { cursor: pointer; }
 </style>
 
-<div class="container-fluid px-4">
+<div class="container mx-auto px-4">
 
-    <!-- Hero Section with Admin-Controlled Banner -->
-   <div class="hero-banner" style="background-image: url('{{ banner_image_url }}');">
-        
+    <!-- Hero Section -->
+    <div class="hero-banner">
+        <img src="{{ banner_image_url }}" alt="We4X Banner">
+        <div class="hero-overlay"></div>
         <div class="hero-text-overlay">
-            <h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold">Welcome to We4X</h1>
-            <p class="text-lg sm:text-xl md:text-3xl mt-4 font-light">Innovating Solutions for a Better Tomorrow</p>
+            <h1>Welcome to We4X</h1>
+            <p>Innovating Solutions for a Better Tomorrow</p>
         </div>
     </div>
 
     <!-- Upcoming Events Section -->
-    <div class="container mx-auto mt-16 p-8">
-        <h2 class="text-4xl font-bold mb-10 text-center text-gray-800">Upcoming Events</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+    <section class="mt-16 px-4 md:px-0">
+        <h2 class="text-center text-3xl md:text-4xl mb-10">Upcoming Events</h2>
+        <div class="grid">
             {% for event in events %}
-            <div class="dashboard-card bg-white rounded-xl p-8">
-                <h3 class="text-2xl font-semibold mb-3 text-gray-900">{{ event.name }}</h3>
-                <p class="text-gray-600 mb-2"><i class="far fa-calendar-alt mr-2"></i>{{ event.date }}</p>
-                <p class="text-gray-500 mb-4"><i class="fas fa-map-marker-alt mr-2"></i>{{ event.location }}</p>
-                <a href="#" class="text-blue-600 hover:text-blue-800 font-medium transition duration-300 ease-in-out">Learn More <i class="fas fa-arrow-right ml-1"></i></a>
+            <div class="dashboard-card" x-data="{ open: false }">
+                <!-- Event Name -->
+                <h3 class="text-2xl font-semibold mb-2">{{ event.name }}</h3>
+                
+                <!-- Event Date/Time -->
+                <p class="event-date mb-4"><i class="far fa-calendar-alt mr-2"></i>{{ event.date }}</p>
+                
+                <!-- Learn More Button -->
+                <div class="text-right">
+                    <button @click="open = true" class="text-blue-600 hover:text-blue-800 font-medium">
+                        Learn More <i class="fas fa-arrow-right ml-1"></i>
+                    </button>
+                </div>
+
+                <!-- Modal -->
+                <div x-show="open" class="fixed inset-0 flex items-center justify-center z-50">
+                    <div class="modal-bg absolute inset-0" @click="open = false"></div>
+                    <div class="bg-white rounded-xl shadow-lg p-6 z-10 max-w-lg w-full">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-2xl font-semibold">{{ event.name }}</h3>
+                            <button @click="open = false" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+                        </div>
+                        <p class="mb-2"><strong>Date:</strong> {{ event.date }}</p>
+                        <p class="mb-2"><strong>Description:</strong> {{ event.description }}</p>
+                        <div class="text-right mt-4">
+                            <button @click="open = false" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Close</button>
+                        </div>
+                    </div>
+                </div>
             </div>
             {% else %}
             <div class="col-span-full text-center text-gray-500 py-10">
@@ -96,18 +145,18 @@
             </div>
             {% endfor %}
         </div>
-    </div>
+    </section>
 
     <!-- Trendy & Latest Posts Section -->
-    <div class="container mx-auto mt-16 p-8">
-        <h2 class="text-4xl font-bold mb-10 text-center text-gray-800">Trendy & Latest Posts</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+    <section class="mt-16 px-4 md:px-0 mb-16">
+        <h2 class="text-center text-3xl md:text-4xl mb-10">Trendy & Latest Posts</h2>
+        <div class="grid">
             {% for post in posts %}
-            <div class="dashboard-card bg-white rounded-xl p-8">
-                <h3 class="text-2xl font-semibold mb-3 text-gray-900">{{ post.title }}</h3>
+            <div class="dashboard-card p-6">
+                <h3 class="text-2xl font-semibold mb-3">{{ post.title }}</h3>
                 <p class="text-gray-600 mb-2"><i class="fas fa-user mr-2"></i>{{ post.author }}</p>
                 <p class="text-gray-500 mb-4"><i class="far fa-clock mr-2"></i>{{ post.date }}</p>
-                <a href="#" class="text-blue-600 hover:text-blue-800 font-medium transition duration-300 ease-in-out">Read More <i class="fas fa-arrow-right ml-1"></i></a>
+                <a href="#" class="text-blue-600 hover:text-blue-800 font-medium">Read More <i class="fas fa-arrow-right ml-1"></i></a>
             </div>
             {% else %}
             <div class="col-span-full text-center text-gray-500 py-10">
@@ -115,7 +164,7 @@
             </div>
             {% endfor %}
         </div>
-    </div>
+    </section>
 
 </div>
 {% endblock %}
