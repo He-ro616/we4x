@@ -11,6 +11,72 @@ body {
     font-family: 'Inter', sans-serif;
 }
 
+/* Hero Section Wrapper - Centering */
+.hero-banner-container {
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    width: 100%;
+}
+
+/* Hero Banner */
+.hero-banner {
+    width: 100%;
+    max-width: 1200px; /* Keep banner centered */
+    height: 25vh; /* Reduced height */
+    position: relative;
+    border-radius: 1rem;
+    overflow: hidden;
+}
+.hero-banner img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+/* Overlay */
+.hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+}
+
+/* Text Overlay */
+.hero-text-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    padding: 1rem 2rem;
+    border-radius: 0.5rem;
+    background: rgba(0,0,0,0.3);
+    color: #fff;
+}
+.hero-text-overlay h1 {
+    font-size: 1.8rem;
+    font-weight: 800;
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.6);
+}
+.hero-text-overlay p {
+    font-size: 1rem;
+    margin-top: 0.5rem;
+    font-weight: 400;
+    text-shadow: 1px 1px 6px rgba(0,0,0,0.5);
+}
+
+/* Responsive adjustments */
+@media (min-width: 640px) {
+    .hero-banner { height: 30vh; }
+    .hero-text-overlay h1 { font-size: 2.5rem; }
+    .hero-text-overlay p { font-size: 1.25rem; }
+}
+@media (min-width: 1024px) {
+    .hero-banner { height: 35vh; }
+    .hero-text-overlay h1 { font-size: 3.5rem; }
+    .hero-text-overlay p { font-size: 1.5rem; }
+}
+
 /* Card styling */
 .dashboard-card {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -23,56 +89,6 @@ body {
     transform: translateY(-5px);
     box-shadow: 0 10px 20px rgba(0,0,0,0.15);
 }
-
-/* Hero Section */
-.hero-banner {
-    width: 100%;
-    height: 40vh;
-    margin: 3rem auto 0 auto;
-    max-width: 1200px;
-    position: relative;
-    border-radius: 1rem;
-    overflow: hidden;
-}
-.hero-banner img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-@media (min-width: 640px) { .hero-banner { height: 50vh; } }
-@media (min-width: 1024px) { .hero-banner { height: 70vh; } }
-
-.hero-overlay {
-    position: absolute;
-    inset: 0;
-    background: rgba(0,0,0,0.3);
-    border-radius: 1rem;
-}
-
-.hero-text-overlay {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-    padding: 2rem;
-    border-radius: 0.5rem;
-    background: rgba(0,0,0,0.35);
-    color: #fff;
-}
-.hero-text-overlay h1 {
-    font-size: 2rem;
-    font-weight: 800;
-    text-shadow: 2px 2px 8px rgba(0,0,0,0.6);
-}
-.hero-text-overlay p {
-    font-size: 1rem;
-    margin-top: 0.75rem;
-    font-weight: 400;
-    text-shadow: 1px 1px 6px rgba(0,0,0,0.5);
-}
-@media (min-width: 640px) { .hero-text-overlay h1 { font-size: 2.5rem; } .hero-text-overlay p { font-size: 1.25rem; } }
-@media (min-width: 1024px) { .hero-text-overlay h1 { font-size: 4rem; } .hero-text-overlay p { font-size: 1.5rem; } }
 
 /* Section Titles */
 h2 { font-weight: 700; color: #1f2937; }
@@ -95,12 +111,14 @@ button { cursor: pointer; }
 <div class="container mx-auto px-4">
 
     <!-- Hero Section -->
-    <div class="hero-banner">
-        <img src="{{ banner_image_url }}" alt="We4X Banner">
-        <div class="hero-overlay"></div>
-        <div class="hero-text-overlay">
-            <h1>Welcome to We4X</h1>
-            <p>Innovating Solutions for a Better Tomorrow</p>
+    <div class="hero-banner-container">
+        <div class="hero-banner">
+            <img src="{{ banner_image_url }}" alt="We4X Banner">
+            <div class="hero-overlay"></div>
+            <div class="hero-text-overlay">
+                <h1>Welcome to We4X</h1>
+                <p>Innovating Solutions for a Better Tomorrow</p>
+            </div>
         </div>
     </div>
 
