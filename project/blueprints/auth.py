@@ -6,6 +6,7 @@ from datetime import datetime
 from project.models import db, User, Event, Post, Comment
 from project.oauth_helpers import oauth
 from project.forms import LoginForm
+from project.models import YoutubeLink
 
 # extras for secure oauth handling
 import secrets
