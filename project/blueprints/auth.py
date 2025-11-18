@@ -13,6 +13,7 @@ from flask_wtf import FlaskForm
 from wtforms import SubmitField
 from authlib.jose.errors import ExpiredTokenError
 from authlib.integrations.base_client.errors import MismatchingStateError
+from project.oauth_helpers import oauth  # <- global OAuth instance
 
 # ---------------------------------------------
 # Blueprint Setup
@@ -68,8 +69,12 @@ def google_authorize():
 
         user = User.query.filter_by(email=email).first()
         if not user:
-            user = User(email=email, name=name, google_id=user_info.get("sub"),
-                        role=current_app.config["ROLES"]["PUBLIC"])
+            user = User(
+                email=email,
+                name=name,
+                google_id=user_info.get("sub"),
+                role=current_app.config["ROLES"]["PUBLIC"]
+            )
             db.session.add(user)
         db.session.commit()
         login_user(user)
@@ -126,14 +131,13 @@ def dashboard_admin():
 
     events = Event.query.all()
     posts = Post.query.options(joinedload(Post.author), joinedload(Post.comments)).order_by(Post.created_at.desc()).all()
-    user_count = User.query.count()
     team_members = User.query.filter_by(role=current_app.config['ROLES']['TEAM']).all()
 
     return render_template(
         'dashboard_admin.html',
         events=events,
         posts=posts,
-        user_count=user_count,
+        user_count=User.query.count(),
         team_count=len(team_members),
         team_members=team_members,
         now=datetime.utcnow()
