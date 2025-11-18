@@ -8,8 +8,9 @@ import os
 import secrets
 
 from project.models import db, User, Event, Post, Comment, YoutubeLink
-from project.oauth_helpers import oauth
 from project.forms import LoginForm, PostForm, CommentForm
+from flask_wtf import FlaskForm
+from wtforms import SubmitField
 from authlib.jose.errors import ExpiredTokenError
 from authlib.integrations.base_client.errors import MismatchingStateError
 
@@ -20,7 +21,14 @@ auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 
 # ---------------------------------------------
-# LOGIN PAGE
+# DELETE POST FORM (CSRF Protection)
+# ---------------------------------------------
+class DeletePostForm(FlaskForm):
+    submit = SubmitField('Delete')
+
+
+# ---------------------------------------------
+# LOGIN
 # ---------------------------------------------
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
@@ -33,8 +41,7 @@ def login():
         if user and user.check_password(form.password.data):
             login_user(user)
             return redirect(url_for('auth.dashboard'))
-        else:
-            flash('Invalid email or password', 'danger')
+        flash('Invalid email or password', 'danger')
     return render_template('login.html', form=form)
 
 
@@ -52,36 +59,31 @@ def google_authorize():
     try:
         token = oauth.google.authorize_access_token()
         user_info = oauth.google.parse_id_token(token, nonce=None, leeway=300)
-
         email = user_info.get("email")
         name = user_info.get("name")
+
         if not email:
-            flash("Login failed: No email from Google", "danger")
+            flash("Login failed: No email returned from Google", "danger")
             return redirect(url_for("auth.login"))
 
         user = User.query.filter_by(email=email).first()
         if not user:
-            user = User(
-                email=email,
-                name=name,
-                google_id=user_info.get("sub"),
-                role=current_app.config["ROLES"]["PUBLIC"]
-            )
+            user = User(email=email, name=name, google_id=user_info.get("sub"),
+                        role=current_app.config["ROLES"]["PUBLIC"])
             db.session.add(user)
-
         db.session.commit()
         login_user(user)
         return redirect(url_for("auth.dashboard_public"))
 
     except MismatchingStateError:
-        flash("Login failed: CSRF warning! Mismatching state. Please try again.", "danger")
+        flash("CSRF warning! Please try again.", "danger")
         return redirect(url_for("auth.login"))
     except ExpiredTokenError:
-        flash("Login failed: The authentication token expired. Please try again.", "danger")
+        flash("Token expired. Please try again.", "danger")
         return redirect(url_for("auth.login"))
     except Exception as e:
         current_app.logger.error(f"OAuth ERROR: {e}")
-        flash("An unexpected error occurred during login. Please try again.", "danger")
+        flash("An unexpected error occurred.", "danger")
         return redirect(url_for("auth.login"))
 
 
@@ -103,10 +105,10 @@ def logout():
 @auth_bp.route('/dashboard')
 @login_required
 def dashboard():
-    roles = current_app.config['ROLES']
-    if current_user.role == roles['ADMIN']:
+    role_map = current_app.config['ROLES']
+    if current_user.role == role_map['ADMIN']:
         return redirect(url_for('auth.dashboard_admin'))
-    elif current_user.role == roles['TEAM']:
+    elif current_user.role == role_map['TEAM']:
         return redirect(url_for('auth.dashboard_team'))
     else:
         return redirect(url_for('auth.dashboard_public'))
@@ -126,14 +128,13 @@ def dashboard_admin():
     posts = Post.query.options(joinedload(Post.author), joinedload(Post.comments)).order_by(Post.created_at.desc()).all()
     user_count = User.query.count()
     team_members = User.query.filter_by(role=current_app.config['ROLES']['TEAM']).all()
-    team_count = len(team_members)
 
     return render_template(
         'dashboard_admin.html',
         events=events,
         posts=posts,
         user_count=user_count,
-        team_count=team_count,
+        team_count=len(team_members),
         team_members=team_members,
         now=datetime.utcnow()
     )
@@ -160,15 +161,17 @@ def dashboard_team():
 @auth_bp.route('/dashboard/public')
 @login_required
 def dashboard_public():
-    form = PostForm()
+    post_form = PostForm()
     comment_form = CommentForm()
+    delete_form = DeletePostForm()
+
     posts = Post.query.options(joinedload(Post.author), joinedload(Post.comments)).order_by(Post.created_at.desc()).all()
     user_count = User.query.count()
     events = Event.query.filter(Event.start_datetime > datetime.utcnow()).order_by(Event.start_datetime).all()
 
-    # YouTube link embed handling
-    youtube_link_obj = YoutubeLink.query.first()
-    raw_url = youtube_link_obj.url if youtube_link_obj else "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+    # YouTube embed
+    youtube_obj = YoutubeLink.query.first()
+    raw_url = youtube_obj.url if youtube_obj else "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
     if "watch?v=" in raw_url:
         youtube_link = raw_url.replace("watch?v=", "embed/")
     elif "youtu.be/" in raw_url:
@@ -179,8 +182,9 @@ def dashboard_public():
     return render_template(
         'dashboard_public.html',
         posts=posts,
-        post_form=form,
+        post_form=post_form,
         comment_form=comment_form,
+        delete_form=delete_form,
         user_count=user_count,
         events=events,
         youtube_link=youtube_link
@@ -198,8 +202,7 @@ def create_post():
         filename = None
         if form.post_image.data:
             filename = secure_filename(form.post_image.data.filename)
-            upload_path = os.path.join(current_app.root_path, 'static/uploads', filename)
-            form.post_image.data.save(upload_path)
+            form.post_image.data.save(os.path.join(current_app.root_path, 'static/uploads', filename))
 
         new_post = Post(
             title=form.title.data,
@@ -211,7 +214,7 @@ def create_post():
         db.session.commit()
         flash("Post created successfully!", "success")
     else:
-        flash("Post creation failed. Ensure all fields are valid.", "danger")
+        flash("Post creation failed. Check your input.", "danger")
     return redirect(url_for('auth.dashboard_public'))
 
 
@@ -223,12 +226,8 @@ def create_post():
 def comment_post(post_id):
     form = CommentForm()
     if form.validate_on_submit():
-        new_comment = Comment(
-            content=form.content.data,
-            author_id=current_user.id,
-            post_id=post_id
-        )
-        db.session.add(new_comment)
+        comment = Comment(content=form.content.data, author_id=current_user.id, post_id=post_id)
+        db.session.add(comment)
         db.session.commit()
         flash("Comment added!", "success")
     else:
@@ -244,7 +243,7 @@ def comment_post(post_id):
 def delete_post(post_id):
     post = Post.query.get_or_404(post_id)
     if post.author_id != current_user.id and current_user.role != current_app.config['ROLES']['ADMIN']:
-        flash('You are not authorized to delete this post.', 'danger')
+        flash('Not authorized to delete this post.', 'danger')
         return redirect(url_for('auth.dashboard_public'))
 
     db.session.delete(post)
@@ -254,13 +253,13 @@ def delete_post(post_id):
 
 
 # ---------------------------------------------
-# MANAGE TEAM (ADMIN)
+# TEAM MANAGEMENT (ADMIN)
 # ---------------------------------------------
 @auth_bp.route('/admin/team')
 @login_required
 def manage_team():
     if current_user.role != current_app.config['ROLES']['ADMIN']:
-        flash("Access denied: Admins only.", "danger")
+        flash("Admins only.", "danger")
         return redirect(url_for('auth.dashboard'))
 
     team_members = User.query.filter_by(role=current_app.config['ROLES']['TEAM']).all()
@@ -271,7 +270,7 @@ def manage_team():
 @login_required
 def add_team_member():
     if current_user.role != current_app.config['ROLES']['ADMIN']:
-        flash('You are not authorized to perform this action.', 'danger')
+        flash('Unauthorized action.', 'danger')
         return redirect(url_for('auth.manage_team'))
 
     email = request.form.get('email')
@@ -286,11 +285,7 @@ def add_team_member():
         flash(f'User {email} updated to team member.', 'success')
     else:
         password = secrets.token_urlsafe(12)
-        new_user = User(
-            email=email,
-            name=email.split('@')[0],
-            role=current_app.config['ROLES']['TEAM']
-        )
+        new_user = User(email=email, name=email.split('@')[0], role=current_app.config['ROLES']['TEAM'])
         new_user.set_password(password)
         db.session.add(new_user)
         db.session.commit()
@@ -303,13 +298,13 @@ def add_team_member():
 @login_required
 def remove_team_member(user_id):
     if current_user.role != current_app.config['ROLES']['ADMIN']:
-        flash('You are not authorized to perform this action.', 'danger')
+        flash('Unauthorized action.', 'danger')
         return redirect(url_for('auth.manage_team'))
 
     user = User.query.get_or_404(user_id)
     user.role = current_app.config['ROLES']['PUBLIC']
     db.session.commit()
-    flash(f'Team member {user.email} has been removed.', 'success')
+    flash(f'Team member {user.email} removed.', 'success')
     return redirect(url_for('auth.manage_team'))
 
 
@@ -329,7 +324,7 @@ def update_password():
     new_password = request.form.get('new_password')
 
     if not current_password or not new_password:
-        flash('Both fields are required.', 'danger')
+        flash('Both fields required.', 'danger')
         return redirect(url_for('auth.update_password_page'))
 
     if not current_user.check_password(current_password):
